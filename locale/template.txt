@@ -8,6 +8,8 @@ Apartment rental control panel for apartment @1 (@2)=
 
 ##[ gui.lua ]##
 Apartment Configuration=
+Owner=
+The owner can throw players out of the apartment.=
 Category=
 In one category, every player can only rent one apartment.=
 Name or ID=
@@ -48,9 +50,11 @@ The apartment extends this many blocks from this panel:=
 
 ##[ init.lua ]##
 Allows player to throw other players out from apartments not owned by them.=
+Allows player to place or destroy Apartment Management Panels.=
 Apartment Management Panel (unconfigured)=
 Apartment Management Panel (owned by @1)=
-Sorry. Only the original owner of this apartment control panel can dig it.=
+Sorry. You have not required privilege to dig it.=
+Sorry. You have not required privilege to place it.=
 The apartment is currently rented to @1. Please end that first.=
 Error: Could not find information about the apartment panel that is to be removed.=
 Removed apartment @1@@@2 successfully.=

@@ -7,6 +7,11 @@ minetest.register_privilege("apartment_unrent", {
 	give_to_singleplayer = false
 })
 
+minetest.register_privilege("apartment", {
+	description = S("Allows player to place or destroy Apartment Management Panels."),
+	give_to_singleplayer = false
+})
+
 -- v2 will contain information about all apartments of the server in the form:
 -- { cat = { ap_descr = { pos = {x=0,y=0,z=0}, original_owner='', owner='' } } }
 apartment.apartments = {}
@@ -214,12 +219,12 @@ apartment.can_dig = function(pos, player)
 	local original_owner = meta:get_string('original_owner')
 	local pname          = player:get_player_name()
 
+	if not minetest.check_player_privs(pname, { apartment = true }) then
+		minetest.chat_send_player(pname, S('Sorry. You have not required privilege to dig it.'));
+		return false
+	end
 	if original_owner == '' then
 		return true
-	end
-	if original_owner ~= pname then
-		minetest.chat_send_player(pname, S('Sorry. Only the original owner of this apartment control panel can dig it.'));
-		return false
 	end
 	if not (original_owner == owner or owner == "") then
 		minetest.chat_send_player(pname, S('The apartment is currently rented to @1. Please end that first.', owner));
@@ -287,6 +292,19 @@ apartment.on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
 	else
 		apartment.gui.panel_control:show(clicker, ctx)
 	end
+end
+
+local function on_place(itemstack, placer, pointed_thing)
+	if not placer or not placer:is_player() then
+		return itemstack
+	end
+	local pname = placer:get_player_name()
+	if not minetest.check_player_privs(pname, { apartment = true }) then
+		minetest.chat_send_player(pname, S('Sorry. You have not required privilege to place it.'));
+		return itemstack
+	end
+
+	return minetest.item_place(itemstack, placer, pointed_thing)
 end
 
 minetest.register_craftitem("apartment:configuration_copier", {
@@ -362,6 +380,7 @@ minetest.register_node("apartment:apartment_free", {
 	can_dig           = apartment.can_dig,
 	after_dig_node    = apartment.after_dig_node,
 	on_rightclick     = apartment.on_rightclick,
+	on_place          = on_place
 })
 
 minetest.register_node("apartment:apartment_occupied", {
@@ -391,6 +410,7 @@ minetest.register_node("apartment:apartment_occupied", {
 	can_dig           = apartment.can_dig,
 	after_dig_node    = apartment.after_dig_node,
 	on_rightclick     = apartment.on_rightclick,
+	on_place          = on_place
 })
 
 if apartment.enable_aphome_command then
