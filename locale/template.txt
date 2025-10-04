@@ -44,6 +44,7 @@ Apartment @1@@@2=
 Owner: @1=
 Now rented by: @1=
 The apartment extends this many blocks from this panel:=
+- vacant -=
 
 ##[ init.lua ]##
 Allows player to throw other players out from apartments not owned by them.=

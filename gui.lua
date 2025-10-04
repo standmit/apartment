@@ -171,7 +171,7 @@ p.panel_control = flow.make_gui(function(player, ctx)
 
 	local original_owner = meta:get_string('original_owner')
 	local owner = meta:get_string('owner')
-	local owner_disp = ((owner == original_owner or owner == "") and "- vacant -" or owner)
+	local owner_disp = ((owner == original_owner or owner == "") and S("- vacant -") or owner)
 	local descr = meta:get_string('descr')
 	local category = meta:get_string('category')
 
