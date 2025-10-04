@@ -445,53 +445,43 @@ if minetest.settings:get_bool("apartment.old_compact_codes", true) then
 		},
 	})
 
-	minetest.register_abm({
+	minetest.register_lbm({
+		name = "apartment:upgrade",
 		nodenames = { "apartment:apartment" },
-		interval = 60,
-		chance = 1,
+		run_at_every_load = false,
 		action = function(pos, node)
-			local node           = minetest.get_node(pos)
-			local meta           = minetest.get_meta(pos)
-			local owner          = meta:get_string('owner')
-			local original_owner = meta:get_string('original_owner')
-			if owner == '' or original_owner == owner then
-				minetest.swap_node(pos, { name = 'apartment:apartment_free', param2 = node.param2 })
-			else
-				minetest.swap_node(pos, { name = 'apartment:apartment_occupied', param2 = node.param2 })
-			end
+				local meta = minetest.get_meta(pos)
+				local owner = meta:get_string('owner')
+				local original_owner = meta:get_string('original_owner')
+				if owner == '' or original_owner == owner then
+					minetest.swap_node(pos, { name = 'apartment:apartment_free', param2 = node.param2 })
+				else
+					minetest.swap_node(pos, { name = 'apartment:apartment_occupied', param2 = node.param2 })
+				end
+				meta:set_string("formspec", "")
+		
+				local descr = meta:get_string("descr")
+				local category = meta:get_string("category")
+
+				local cat_data = apartment.apartments[category]
+				if not cat_data then return end
+				local ap_data = cat_data[descr]
+				if not ap_data then return end
+
+				if not vector.equals(ap_data.pos, pos) then -- Dulplicated!
+					local new_data = table.copy(ap_data)
+					new_data.pos = pos
+					local number = string.match(descr, '%d+$')
+					local new_descr = descr .. "_1"
+					if number then
+						new_descr = string.sub(descr, 1, - #tostring(number) - 1) .. tostring(number + 1)
+					end
+					meta:set_string("descr", new_descr)
+					cat_data[new_descr] = new_data
+					apartment.data_modified = true
+				end		
 		end
 	})
 end
-
-minetest.register_abm({
-	nodenames = { "apartment:apartment_free" },
-	interval = 1,
-	chance = 1,
-	action = function(pos, node)
-		local meta = minetest.get_meta(pos)
-		meta:set_string("formspec", "") -- Remove formspec used in v1
-		local descr = meta:get_string("descr")
-		local category = meta:get_string("category")
-
-		local cat_data = apartment.apartments[category]
-		if not cat_data then return end
-		local ap_data = cat_data[descr]
-
-		if not ap_data then return end       -- Still writing data, please wait!
-
-		if not vector.equals(ap_data.pos, pos) then -- Dulplicated!
-			local new_data = table.copy(ap_data)
-			new_data.pos = pos
-			local number = string.match(descr, '%d+$')
-			local new_descr = descr .. "_1"
-			if number then
-				new_descr = string.sub(descr, 1, - #tostring(number) - 1) .. tostring(number + 1)
-			end
-			meta:set_string("descr", new_descr)
-			cat_data[new_descr] = new_data
-			apartment.data_modified = true
-		end
-	end,
-})
 
 apartment.restore_data()
