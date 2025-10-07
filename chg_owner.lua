@@ -62,9 +62,9 @@ apartment.chg_owner = function(panel_pos, pos, category, descr, original_owner, 
 				else
 					infotext = S("@1 in Ap. @2 (@3)", S_default("Locked Chest"), disp_descr, disp_pname)
 				end
-			elseif sstarts(n.name, "doors:door_steel_") then
+			elseif sstarts(n.name, "doors:door_") and meta:get_string("owner") ~= "" then
 				if original_owner == owner then
-					infotext = S_doors("Steel Door") .. "\n" .. S_doors("Owned by @1", original_owner)
+					infotext = ItemStack(n.name):get_description() .. "\n" .. S_doors("Owned by @1", original_owner)
 				else
 					infotext = S("Apartment @1 (@2)", disp_descr, disp_pname)
 				end
