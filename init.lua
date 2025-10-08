@@ -7,6 +7,23 @@ minetest.register_privilege("apartment_unrent", {
 	give_to_singleplayer = false
 })
 
+local areas_mod_loaded = minetest.get_modpath("areas") ~= nil
+if areas_mod_loaded then
+	apartment.areas = {}
+
+	areas:registerOnRemove(
+		function (id)
+			local pos = apartment.areas[id]
+			if pos then
+				local meta = minetest.get_meta(pos)
+				meta:set_string("area_id", "")
+				apartment.areas[id] = nil
+				apartment.data_modified = true
+			end
+		end
+	)
+end
+
 -- v2 will contain information about all apartments of the server in the form:
 -- { cat = { ap_descr = { pos = {x=0,y=0,z=0}, original_owner='', owner='' } } }
 apartment.apartments = {}
@@ -27,7 +44,11 @@ apartment.save_data = function()
 			apartment.apartments[k] = nil
 		end
 	end
-	local data = minetest.serialize(apartment.apartments)
+	local buffer = { apartments = apartment.apartments }
+	if areas_mod_loaded then
+		buffer.areas = apartment.areas
+	end
+	local data = minetest.serialize(buffer)
 	if minetest.safe_file_write(apartment.save_path, data) then
 		return true
 	else
@@ -96,7 +117,12 @@ apartment.restore_data = function()
 			error("[Apartment] Failed to deserialize data. Please solve this problem manually.")
 			return false
 		end
-		apartment.apartments = data
+		if data.apartments then
+			apartment.apartments = data.apartments
+			apartment.areas = data.areas
+		else
+			apartment.apartments = data
+		end
 		return true
 	end
 end
@@ -183,6 +209,27 @@ apartment.rent = function(pos, owner, oldmetadata, actor)
 			minetest.swap_node(pos, { name = 'apartment:apartment_occupied', param2 = node.param2 })
 		end
 	end
+	if areas_mod_loaded and owner ~= "" then
+		local area_id
+		if not oldmetadata then
+			area_id = meta:get_int('area_id')
+		else
+			area_id = tonumber(oldmetadata.fields['area_id']) or 0
+		end
+		if area_id ~= 0 then
+			local success, msg = minetest.registered_chatcommands["change_owner"].func(
+				original_owner,
+				tostring(area_id) .. " " .. owner
+			)
+
+			if not success then
+				minetest.log("error", "[Apartment] Failed to set owner of area " .. area_id .. " (" .. msg .. "). Its ID will be removed from Apartment registry.")
+				if not oldmetadata then
+					meta:set_string("area_id", "")
+				end
+			end
+		end
+	end
 	return true
 end
 
@@ -192,6 +239,7 @@ apartment.on_construct = function(pos)
 	meta:set_string('original_owner', '')
 	meta:set_string('owner', '')
 	meta:set_string('descr', '')
+	meta:set_string('area_id', '')
 	meta:set_int('size_up', 0)
 	meta:set_int('size_down', 0)
 	meta:set_int('size_right', 0)
@@ -242,6 +290,11 @@ apartment.after_dig_node = function(pos, oldnode, oldmetadata, digger)
 		oldmetadata.param2 = oldnode.param2
 		apartment.rent(pos, '', oldmetadata, digger)
 		apartment.apartments[category][descr] = nil
+		if areas_mod_loaded then
+			local meta = minetest.get_meta(pos)
+			local area_id = meta:get_int("area_id")
+			apartment.areas[area_id] = nil
+		end
 		apartment.data_modified = true
 		minetest.chat_send_player(digger:get_player_name(), S("Removed apartment @1@@@2 successfully.", descr, category))
 	end

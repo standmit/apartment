@@ -1,6 +1,7 @@
 local S = minetest.get_translator("apartment")
 local gui = flow.widgets
 local p = {}
+local areas_mod_loaded = minetest.get_modpath("areas") ~= nil
 
 p.configure_gui = flow.make_gui(function(player, ctx)
 	local name = player:get_player_name()
@@ -38,6 +39,18 @@ p.configure_gui = flow.make_gui(function(player, ctx)
 				gui_element_name = "descr",
 			}
 		},
+		(
+			areas_mod_loaded and
+			gui.HBox {
+				gui.Label { label = S("Area ID (optional)"), w = 2 },
+				gui.Field { name = "area_id", expand = true, default = "" },
+				gui.Tooltip {
+					tooltip_text = S("ID of the area to be temporarily granted to the player."),
+					gui_element_name = "area_id",
+				}
+			} or
+			gui.Spacer {}
+		),
 		gui.Box { w = 1, h = 0.05, color = "grey" },
 		gui.Label { label = S("The apartment shall extend this many blocks from this panel:") },
 		gui.HBox {
@@ -131,6 +144,34 @@ p.configure_gui = flow.make_gui(function(player, ctx)
 							return
 						end
 
+						if areas_mod_loaded then
+							local area_id = tostring(fields.area_id)
+							if area_id ~= "" then
+								area_id = tonumber(area_id)
+								if not areas:isAreaOwner(area_id, fields.owner) then
+									minetest.chat_send_player(name,
+										S("Error: Area @1 does not exist or is not owned by @2.",
+										area_id, fields.owner)
+									)
+									return
+								end
+								local area_controlled_by = apartment.areas[area_id]
+								if (area_controlled_by ~= nil) and (not vector.equals(area_controlled_by, pos)) then
+									minetest.chat_send_player(
+										name,
+										S(
+											"Error: Area @1 already set in Panel @2.",
+											area_id,
+											minetest.pos_to_string(apartment.areas[area_id])
+										)
+									)
+									return
+								end
+								meta:set_int('area_id', area_id)
+								apartment.areas[area_id] = pos
+							end
+						end
+
 						meta:set_int('size_up', size_up)
 						meta:set_int('size_down', size_down)
 						meta:set_int('size_right', size_right)
@@ -141,7 +182,7 @@ p.configure_gui = flow.make_gui(function(player, ctx)
 						meta:set_string('descr', fields.descr)
 						meta:set_string('category', fields.category)
 
-						local status, msg = apartment.rent(pos, name, nil, player)
+						local status, msg = apartment.rent(pos, fields.owner, nil, fields.owner)
 						if status then
 							minetest.chat_send_player(name, S("Apartment @1@@@2 is ready for rental.", descr, category))
 						else
@@ -291,10 +332,19 @@ p.panel_control = flow.make_gui(function(player, ctx)
 	local size_left  = meta:get_int('size_left');
 	local size_front = meta:get_int('size_front');
 	local size_back  = meta:get_int('size_back');
+	local area_id    = meta:get_int('area_id');
 
 	return gui.VBox { w = 10,
 		gui.HBox {
-			gui.Label { label = S("Apartment @1@@@2", descr, category) },
+			gui.Label { label = S("Apartment @1@@@2", descr, category), w = 1, expand = true },
+			(
+				areas_mod_loaded and (area_id ~= 0) and
+				gui.Label {
+					label = "Area: " .. area_id,
+					expand = true,
+				} or
+				gui.Spacer {}
+			),
 			gui.ButtonExit {
 				label = "x", w = 0.5, h = 0.5,
 				expand = true, align_h = "right",
