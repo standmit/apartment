@@ -7,17 +7,36 @@ minetest.register_privilege("apartment_unrent", {
 	give_to_singleplayer = false
 })
 
+function apartment.split_string(str)
+	local ids = {}
+	for token in str:gmatch("%d+") do
+		local id = tonumber(token)
+		if id then
+			table.insert(ids, id)
+		end
+	end
+	return ids
+end
+
 local areas_mod_loaded = minetest.get_modpath("areas") ~= nil
 if areas_mod_loaded then
 	apartment.areas = {}
 
 	areas:registerOnRemove(
-		function (id)
-			local pos = apartment.areas[id]
+		function (rem_area_id)
+			local pos = apartment.areas[rem_area_id]
 			if pos then
 				local meta = minetest.get_meta(pos)
-				meta:set_string("area_id", "")
-				apartment.areas[id] = nil
+				local area_ids = meta:get_string("area_id")
+				area_ids = apartment.split_string(area_ids)
+				local new_area_ids = ""
+				for _, id in ipairs(area_ids) do
+					if id ~= rem_area_id then
+						new_area_ids = new_area_ids .. id .. " "
+					end
+				end
+				meta:set_string("area_id", new_area_ids)
+				apartment.areas[rem_area_id] = nil
 				apartment.data_modified = true
 			end
 		end
@@ -210,23 +229,28 @@ apartment.rent = function(pos, owner, oldmetadata, actor)
 		end
 	end
 	if areas_mod_loaded and owner ~= "" then
-		local area_id
+		local area_ids
 		if not oldmetadata then
-			area_id = meta:get_int('area_id')
+			area_ids = meta:get_string('area_id')
 		else
-			area_id = tonumber(oldmetadata.fields['area_id']) or 0
+			area_ids = oldmetadata.fields['area_id'] or ""	
 		end
-		if area_id ~= 0 then
-			local success, msg = minetest.registered_chatcommands["change_owner"].func(
-				original_owner,
-				tostring(area_id) .. " " .. owner
-			)
-
-			if not success then
-				minetest.log("error", "[Apartment] Failed to set owner of area " .. area_id .. " (" .. msg .. "). Its ID will be removed from Apartment registry.")
-				if not oldmetadata then
-					meta:set_string("area_id", "")
+		if area_ids ~= "" then
+			area_ids = apartment.split_string(area_ids)
+			local new_area_ids = ""
+			for _, id in ipairs(area_ids) do
+				local success, msg = minetest.registered_chatcommands["change_owner"].func(
+					original_owner,
+					tostring(id) .. " " .. owner
+				)
+				if success then
+					new_area_ids = new_area_ids .. id .. " "
+				else
+					minetest.log("error", "[Apartment] Failed to set owner of area " .. id .. " (" .. msg .. "). Its ID will be removed from Apartment registry.")
 				end
+			end
+			if not oldmetadata then
+				meta:set_string("area_id", new_area_ids)
 			end
 		end
 	end
@@ -292,8 +316,11 @@ apartment.after_dig_node = function(pos, oldnode, oldmetadata, digger)
 		apartment.apartments[category][descr] = nil
 		if areas_mod_loaded then
 			local meta = minetest.get_meta(pos)
-			local area_id = meta:get_int("area_id")
-			apartment.areas[area_id] = nil
+			local area_ids = meta:get_string("area_id")
+			area_ids = apartment.split_string(area_ids)
+			for _, id in ipairs(area_ids) do
+				apartment.areas[id] = nil
+			end
 		end
 		apartment.data_modified = true
 		minetest.chat_send_player(digger:get_player_name(), S("Removed apartment @1@@@2 successfully.", descr, category))
