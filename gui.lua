@@ -1,6 +1,7 @@
 local S = minetest.get_translator("apartment")
 local gui = flow.widgets
 local p = {}
+local max_side = tonumber(minetest.settings:get("apartment.max_side")) or 10
 
 
 p.configure_gui = flow.make_gui(function(player, ctx)
@@ -127,7 +128,7 @@ p.configure_gui = flow.make_gui(function(player, ctx)
 							return
 						end
 
-						if math.max(size_left, size_right, size_up, size_down, size_front, size_back) > 10 then
+						if math.max(size_left, size_right, size_up, size_down, size_front, size_back) > max_side then
 							minetest.chat_send_player(name, S("Error: The area is too large."))
 							return
 						end
