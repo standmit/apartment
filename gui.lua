@@ -3,7 +3,6 @@ local gui = flow.widgets
 local p = {}
 local max_side = tonumber(minetest.settings:get("apartment.max_side")) or 10
 
-
 p.configure_gui = flow.make_gui(function(player, ctx)
 	local name = player:get_player_name()
 	local pos = ctx.pos
@@ -133,7 +132,7 @@ p.configure_gui = flow.make_gui(function(player, ctx)
 							return
 						end
 
-						if apartment.apartments[category] and apartment.apartments[category][descr] then
+						if apartment.apartments[category] and apartment.apartments[category][descr] and not vector.equals(apartment.apartments[category][descr].pos, pos) then
 							minetest.chat_send_player(name,
 								S("Error: The apartment @1@@@2 already exists. " ..
 								  "Please choose a different name or category.",
