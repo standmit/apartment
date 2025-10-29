@@ -1,0 +1,65 @@
+# textdomain: apartment
+
+##[ chg_owner.lua ]##
+@1 in Ap. @2 (@3)=@1 в кв. @2 (@3)
+Apartment @1 (@2)=Квартира @1 (@2)
+Rent apartment @1 here by right-clicking this panel!=Кликни ПКМ, чтобы арендовать квартиру @1!
+Apartment rental control panel for apartment @1 (@2)=Панель аренды квартиры @1 (@2)
+
+##[ gui.lua ]##
+Apartment Configuration=Настройка аренды
+Category=Категория
+In one category, every player can only rent one apartment.=В каждой категории игрок может арендовать только одну квартиру.
+Name or ID=Название или ID
+This is the unique ID of this apartment in this category.=Уникальный ID этой квартиры в категории.
+The apartment shall extend this many blocks from this panel:=Границы квартиры относительно этой панели:
+Back=Назад
+Left=Влево
+Right=Вправо
+Front=Вперёд
+Up=Вверх
+Down=Вниз
+Abort=Отмена
+Store and Offer=Сохранить
+Error: Not all fields have been filled.=Ошибка: Не все поля заполнены.
+Error: The area is too large.=Ошибка: Область слишком велика.
+Error: The apartment @1@@@2 already exists. Please choose a different name or category.=Ошибка: Квартира @1@@@2 уже существует. Выберите другое название или категорию.
+Apartment @1@@@2 is ready for rental.=Квартира @1@@@2 готова к сдаче.
+Failed to create apartment @1@@@2. (@3)=Не удалось создать квартиру @1@@@2. (@3)
+This apartment @nhave been rented.=Эта квартира @nсдана.
+This apartment @nwas glitched.=Эта квартира @nглючит.
+Unrent=Освободить
+You have ended your rent of apartment @1@@@2. It is free for others to rent again.=Вы освободили квартиру @1@@@2. Теперь она доступна для аренды другим игрокам.
+Something went wrong when giving back the apartment @1@@@2. (@3)=Ошибка при возврате квартиры @1@@@2. (@3)
+Dig the panel @nto remove this apartment.=Сломайте эту панель @nчтобы удалить квартиру.
+Rent=Арендовать
+This apartment (@1@@@2) is not registered. Please unrent it and ask the original builder to re-configure this panel.=Эта квартира (@1@@@2) не зарегистрирована. Пожалуйста, освободите её и попросите владельца перенастроить эту панель.
+Sorry, you can only rent one apartment per category at a time. You have already rented apartment @1@@@2.=Вы не можете арендовать больше одной квартиры в категории. Вы уже арендовали квартиру @1@@@2.
+You have rented apartment @1@@@2. Enjoy your stay!=Вы арендовали квартиру @1@@@2. Добро пожаловать!
+Something went wrong when renting the apartment @1@@@2. (@3)=Ошибка при аренде квартиры @1@@@2. (@3)
+Force Unrent=Выселить
+Player @1 has been thrown out of apartment @2@@@3. It can now be rented by another player.=Игрок @1 был выселен из квартиры @2@@@3. Теперь её может арендовать другой игрок.
+Something went wrong when throwing @1 out of the apartment @2@@@3. (@4)=Ошибка при выселении @1 из квартиры @2@@@3. (@4)
+Apartment @1@@@2=Квартира @1@@@2
+Owner: @1=Владелец: @1
+Now rented by: @1=Арендовано: @1
+The apartment extends this many blocks from this panel:=Границы квартиры относительно этой панели:
+- vacant -=никем
+
+##[ init.lua ]##
+Allows player to throw other players out from apartments not owned by them.=Позволяет выселять игроков из любых квартир.
+Apartment Management Panel (unconfigured)=Панель управления арендой (ненастроенная)
+Apartment Management Panel (owned by @1)=Панель управления арендой (владелец @1)
+Sorry. Only the original owner of this apartment control panel can dig it.=Только владелец может сломать эту панель.
+The apartment is currently rented to @1. Please end that first.=Квартиру снимает @1. Сперва его нужно выселить.
+Error: Could not find information about the apartment panel that is to be removed.=Ошибка: Не удалось найти информацию о подлежащей удалению панели.
+Removed apartment @1@@@2 successfully.=Квартира @1@@@2 удалена.
+Apartment Configuration Copier=Программатор панелей аренды
+Please configure the panel first before copying configurations from it.=Сперва настройте панель прежде чем копировать с неё настройки.
+Apartment Configuration Copier@nU:@1 D:@2 L:@3 R:@4 F:@5 B:@6@n@7@@@8@nRightclick on a panel to paste the configurations.=Программатор панелей аренды@nU:@1 D:@2 L:@3 R:@4 F:@5 B:@6@n@7@@@8@nПКМ по панели чтобы вставить настройки.
+Configuration copied.=Настройки скопированы.
+Apartment Management Panel=Панель управления арендой
+[<category>]=[<категория>]
+Teleports you back to the apartment you rented.=Телепортировать в квартиру.
+You do not have an apartment in category @1.=У вас нет квартиры в категории @1.
+Welcome back to your apartment @1@@@2.=Добро пожаловать в квартиру @1@@@2.
