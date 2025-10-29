@@ -2,10 +2,6 @@ local S = minetest.get_translator("apartment")
 local gui = flow.widgets
 local p = {}
 
-local function isEqual(pos1, pos2)
-	return (pos1.x == pos2.x) and (pos1.y == pos2.y) and (pos1.z == pos2.z)
-end
-
 p.configure_gui = flow.make_gui(function(player, ctx)
 	local name = player:get_player_name()
 	local pos = ctx.pos
@@ -127,7 +123,7 @@ p.configure_gui = flow.make_gui(function(player, ctx)
 							return
 						end
 
-						if apartment.apartments[category] and apartment.apartments[category][descr] and (not isEqual(apartment.apartments[category][descr].pos, pos)) then
+						if apartment.apartments[category] and apartment.apartments[category][descr] and not vector.equals(apartment.apartments[category][descr].pos, pos) then
 							minetest.chat_send_player(name,
 								S("Error: The apartment @1@@@2 already exists. " ..
 								  "Please choose a different name or category.",
