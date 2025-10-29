@@ -17,7 +17,7 @@ apartment.chg_owner = function(panel_pos, pos, category, descr, original_owner, 
 	end; if node_now_owner == "" then
 		node_now_owner = original_owner
 	end
-	if node_now_owner == original_owner or node_now_owner == now_owner then
+	if node_now_owner == original_owner or node_now_owner == now_owner or node_now_owner == actor then
 		local owner_or_orig = (owner ~= "" and owner) or original_owner
 		if n.name == "locks:shared_locked_chest" then
 			locks:lock_set_owner(pos, owner_or_orig, "Shared locked chest")

@@ -8,6 +8,8 @@ Apartment rental control panel for apartment @1 (@2)=Панель аренды �
 
 ##[ gui.lua ]##
 Apartment Configuration=Настройка аренды
+Owner=Владелец
+The owner can throw players out of the apartment.=Владелец может выселять игроков из квартиры.
 Category=Категория
 In one category, every player can only rent one apartment.=В каждой категории игрок может арендовать только одну квартиру.
 Name or ID=Название или ID
@@ -48,9 +50,11 @@ The apartment extends this many blocks from this panel:=Границы квар�
 
 ##[ init.lua ]##
 Allows player to throw other players out from apartments not owned by them.=Позволяет выселять игроков из любых квартир.
+Allows player to place or destroy Apartment Management Panels.=Позволяет ломать и устанавливать Панели управления арендой.
 Apartment Management Panel (unconfigured)=Панель управления арендой (ненастроенная)
 Apartment Management Panel (owned by @1)=Панель управления арендой (владелец @1)
-Sorry. Only the original owner of this apartment control panel can dig it.=Только владелец может сломать эту панель.
+Sorry. You have not required privilege to dig it.=У вас нет привилегии ломать панели.
+Sorry. You have not required privilege to place it.=У вас нет привилегии устанавливать панели.
 The apartment is currently rented to @1. Please end that first.=Квартиру снимает @1. Сперва его нужно выселить.
 Error: Could not find information about the apartment panel that is to be removed.=Ошибка: Не удалось найти информацию о подлежащей удалению панели.
 Removed apartment @1@@@2 successfully.=Квартира @1@@@2 удалена.

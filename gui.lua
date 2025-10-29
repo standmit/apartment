@@ -24,6 +24,14 @@ p.configure_gui = flow.make_gui(function(player, ctx)
 		gui.Label { label = S("Apartment Configuration") },
 		gui.Box { w = 1, h = 0.05, color = "grey" },
 		gui.HBox {
+			gui.Label { label = S("Owner"), w = 2},
+			gui.Field { name = "owner", expand = true, default = name },
+			gui.Tooltip {
+				tooltip_text = S("The owner can throw players out of the apartment."),
+				gui_element_name = "owner",
+			}
+		},
+		gui.HBox {
 			gui.Label { label = S("Category"), w = 2 },
 			gui.Field { name = "category", expand = true, default = defaults.category },
 			gui.Tooltip {
@@ -141,6 +149,8 @@ p.configure_gui = flow.make_gui(function(player, ctx)
 
 						meta:set_string('descr', fields.descr)
 						meta:set_string('category', fields.category)
+						meta:set_string('original_owner', fields.owner)
+						meta:set_string('owner', "")
 
 						local status, msg = apartment.rent(pos, name, nil, player)
 						if status then
