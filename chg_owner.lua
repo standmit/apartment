@@ -52,6 +52,11 @@ apartment.chg_owner = function(panel_pos, pos, category, descr, original_owner, 
 				obj:initialize_inventory()
 				obj:update_appearance()
 			end
+		elseif n.name == "smartshop:storage" and smartshop.api and smartshop.api.get_object then
+			local obj = smartshop.api.get_object(pos)
+			obj:initialize_metadata(owner_or_orig)
+			obj:initialize_inventory()
+			obj:update_appearance()
 		else -- These does not require special processing
 			local disp_pname = owner or "- vacant -"
 			local disp_descr = descr .. "@" .. category
